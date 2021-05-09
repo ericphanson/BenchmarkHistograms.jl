@@ -9,7 +9,7 @@ This means one should not call `using` on both BenchmarkPlots and BenchmarkTools
 
 However, BenchmarkPlots re-exports all the export of BenchmarkTools, so you can simply call `using BenchmarkPlots`.
 
-Providing this functionality BenchmarkTools itself was discussed in <https://github.com/JuliaCI/BenchmarkTools.jl/pull/180>.
+Providing this functionality in BenchmarkTools itself was discussed in <https://github.com/JuliaCI/BenchmarkTools.jl/pull/180>.
 
 ## Example
 
@@ -58,3 +58,5 @@ samples: 2379; evals/sample: 1000; memory estimate: 0 bytes; allocs estimate: 0
                                         Counts
 min: 1.917 ns (0.00% GC); mean: 2.040 μs (0.00% GC); median: 2.257 μs (0.00% GC); max: 3.552 μs (0.00% GC).
 ```
+
+See also <https://tratt.net/laurie/blog/entries/minimum_times_tend_to_mislead_when_benchmarking.html> for another example of where looking at the whole histogram can be useful in benchmarking.
