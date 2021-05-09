@@ -1,4 +1,4 @@
-[![CI](https://github.com/ericphanson/BenchmarkPlots.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/ericphanson/BenchmarkPlots.jl/actions/workflows/CI.yml)
+[![CI](https://github.com/ericphanson/BenchmarkPlots.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/ericphanson/BenchmarkPlots.jl/actions/workflows/CI.yml)
 [![codecov](https://codecov.io/gh/ericphanson/BenchmarkPlots.jl/branch/main/graph/badge.svg?token=v0aca89xRi)](https://codecov.io/gh/ericphanson/BenchmarkPlots.jl)
 
 # BenchmarkPlots
