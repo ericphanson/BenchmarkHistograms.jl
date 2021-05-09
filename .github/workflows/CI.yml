@@ -1,9 +1,23 @@
+
 name: CI
 on:
   push:
-    branches: "main"
-    tags: ["*"]
+    branches:
+      - master
+      - main
+      - /^release-.*$/
+    paths:
+      - '.github/workflows/CI.yml'
+      - 'test/**'
+      - 'src/**'
+      - 'Project.toml'
   pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/CI.yml'
+      - 'test/**'
+      - 'src/**'
+      - 'Project.toml'
   release:
   workflow_dispatch:
 jobs:
