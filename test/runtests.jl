@@ -17,8 +17,8 @@ using Test
     @test n_matches(r"evals/sample:") == 1
     @test n_matches(r"memory estimate:") == 1
     @test n_matches(r"allocs estimate:") == 1
-    # y-axis label + four summary stats
-    @test n_matches(r"ns") == 5
+    # y-axis label + at most four summary stats
+    @test 1 <= n_matches(r"ns") <= 5
     @test n_matches(r"Counts") == 1
     # Summary stats
     @test n_matches(r"min") == n_matches(r"mean") == n_matches(r"median") == n_matches(r"max") == 1
