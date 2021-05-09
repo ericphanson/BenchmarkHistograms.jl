@@ -9,6 +9,8 @@ This means one should not call `using` on both BenchmarkPlots and BenchmarkTools
 
 However, BenchmarkPlots re-exports all the export of BenchmarkTools, so you can simply call `using BenchmarkPlots`.
 
+Based on <https://github.com/JuliaCI/BenchmarkTools.jl/pull/180>.
+
 ## Example
 
 One just uses `BenchmarkPlots` instead of `BenchmarkTools`, e.g.
