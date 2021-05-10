@@ -57,12 +57,13 @@ function Base.show(io::IO, ::MIME"text/plain", bp::BenchmarkHistogram; nbins=NBI
         println(io)
     end
     print(io, "min: ", minstr, "; mean: ", meanstr, "; median: ", medstr, "; max: ", maxstr, ".")
+    return nothing
 end
 
 macro benchmark(exprs...)
-    quote
+    return esc(quote
         $BenchmarkHistogram($BenchmarkTools.@benchmark($(exprs...)))
-    end |> esc
+    end)
 end
 
 # We vendor some pretty-printing methods from BenchmarkTools
