@@ -1,4 +1,4 @@
-name = "BenchmarkPlots"
+name = "BenchmarkHistograms"
 uuid = "a80a1652-aad8-438d-b80b-ecb1a674e33b"
 authors = ["Eric Hanson <5846501+ericphanson@users.noreply.github.com> and contributors"]
 version = "0.1.0"

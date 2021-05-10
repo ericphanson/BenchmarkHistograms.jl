@@ -1,4 +1,4 @@
-using BenchmarkPlots
+using BenchmarkHistograms
 using Test
 
 function tests()
@@ -27,17 +27,17 @@ function tests()
 end
 
 function tests(nbins)
-    pre = BenchmarkPlots.NBINS[]
-    BenchmarkPlots.NBINS[] = nbins
+    pre = BenchmarkHistograms.NBINS[]
+    BenchmarkHistograms.NBINS[] = nbins
     try
         tests()
     finally
-        BenchmarkPlots.NBINS[] = pre
+        BenchmarkHistograms.NBINS[] = pre
     end
     return nothing
 end
 
-@testset "BenchmarkPlots.jl" begin
+@testset "BenchmarkHistograms.jl" begin
     tests()
     tests(10)
     tests(-1)

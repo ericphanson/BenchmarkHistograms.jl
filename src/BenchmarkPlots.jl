@@ -1,4 +1,4 @@
-module BenchmarkPlots
+module BenchmarkHistograms
 
 using UnicodePlots
 using Statistics
