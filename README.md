@@ -7,11 +7,15 @@ Wraps [BenchmarkTools.jl](https://github.com/JuliaCI/BenchmarkTools.jl/) to prov
 
 This means one should not call `using` on both BenchmarkHistograms and BenchmarkTools in the same namespace, or else these `@benchmark` macros will conflict ("WARNING: using `BenchmarkTools.@benchmark` in module Main conflicts with an existing identifier.")
 
-However, BenchmarkHistograms re-exports all the export of BenchmarkTools, so you can simply call `using BenchmarkHistograms`.
+However, BenchmarkHistograms re-exports all of BenchmarkTools (including the module `BenchmarkTools` itself), so you can simply call `using BenchmarkHistograms` instead.
 
 Providing this functionality in BenchmarkTools itself was discussed in <https://github.com/JuliaCI/BenchmarkTools.jl/pull/180>.
 
-Use the setting `BenchmarkHistograms.NBINS[] = 10` to change the number of histogram bins used.
+Use the setting `BenchmarkHistograms.NBINS[]` to change the number of histogram bins used, e.g.
+```julia
+BenchmarkHistograms.NBINS[] = 10
+```
+to use 10 bins.
 
 ## Example
 

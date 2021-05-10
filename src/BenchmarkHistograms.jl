@@ -29,7 +29,7 @@ struct BenchmarkHistogram
 end
 
 # borrowed some from `show` implementation for `BenchmarkTools.Trial`
-function Base.show(io::IO, ::MIME"text/plain", bp::BenchmarkHistogram)
+function Base.show(io::IO, ::MIME"text/plain", bp::BenchmarkHistogram; nbins=NBINS[])
     t = bp.trial
     if length(t) > 0
         min = minimum(t)
@@ -51,10 +51,11 @@ function Base.show(io::IO, ::MIME"text/plain", bp::BenchmarkHistogram)
         meanstr = "N/A"
     end
     println(io, "samples: ", length(t), "; evals/sample: ", t.params.evals, "; memory estimate: ", memorystr, "; allocs estimate: ", allocsstr)
-
-    bin_arg = NBINS[] <= 0 ? NamedTuple() : (; nbins=NBINS[])
-    show(io, histogram(t.times; ylabel="ns", xlabel="Counts", bin_arg...))
-    println(io)
+    if length(t) > 0
+        bin_arg = nbins <= 0 ? NamedTuple() : (; nbins=nbins)
+        show(io, histogram(t.times; ylabel="ns", xlabel="Counts", bin_arg...))
+        println(io)
+    end
     print(io, "min: ", minstr, "; mean: ", meanstr, "; median: ", medstr, "; max: ", maxstr, ".")
 end
 
