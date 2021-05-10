@@ -31,7 +31,7 @@ using BenchmarkPlots
 
 @benchmark 5 ∈ v setup=(v = rand(1:10000, 10000))
 
-# This function gives a nice Gaussian distribution of times, kindly supplied by Mason Protter:
+# This function gives a somewhat more Gaussian distribution of times, kindly supplied by Mason Protter:
 
 f() = sum((sin(i) for i in 1:round(Int, 1000 + 100*randn())))
 
