@@ -60,9 +60,9 @@ function Base.show(io::IO, ::MIME"text/plain", bp::BenchmarkHistogram; nbins=NBI
 end
 
 macro benchmark(exprs...)
-    return quote
-        BenchmarkHistogram(BenchmarkTools.@benchmark($(exprs...)))
-    end
+    quote
+        $BenchmarkHistogram($BenchmarkTools.@benchmark($(exprs...)))
+    end |> esc
 end
 
 # We vendor some pretty-printing methods from BenchmarkTools
