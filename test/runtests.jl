@@ -4,8 +4,8 @@ import BenchmarkTools
 
 
 function counting_tests(nbins=nothing)
-    bp = @benchmark 1+1
-    output = sprint(show, MIME"text/plain"(), bp)
+    bh = @benchmark 1+1
+    output = sprint(show, MIME"text/plain"(), bh)
 
     # Don't want to test the exact string since the stats will
     # fluctuate. So let's just test that it contains the right
@@ -30,9 +30,9 @@ end
 
 
 function empty_test()
-    bp = @benchmark 1+1
-    empty!(bp.trial.times)
-    output = sprint(show, MIME"text/plain"(), bp)
+    bh = @benchmark 1+1
+    empty!(bh.trial.times)
+    output = sprint(show, MIME"text/plain"(), bh)
 
     # Don't want to test the exact string since the stats will
     # fluctuate. So let's just test that it contains the right
@@ -63,7 +63,6 @@ function with_bins(f, nbins)
 end
 
 @testset "BenchmarkHistograms.jl" begin
-
     @testset "Exports" begin
         @test symdiff(names(BenchmarkTools), names(BenchmarkHistograms)) == [:BenchmarkHistograms]
     end
@@ -75,5 +74,11 @@ end
         empty_test()
     end
 end
+
+# Macro hygiene test; done in global scope intentionally
+f(x) = x+1
+y=10
+bh = @benchmark f($y)
+@test bh isa BenchmarkHistograms.BenchmarkHistogram
 
 include("vendor.jl")
