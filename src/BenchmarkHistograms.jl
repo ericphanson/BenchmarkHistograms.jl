@@ -24,12 +24,12 @@ When `NBINS[] <= 0`, the number is chosen automatically by UnicodePlots.
 """
 const NBINS = Ref(0)
 
-struct BenchmarkPlot
+struct BenchmarkHistogram
     trial::BenchmarkTools.Trial
 end
 
 # borrowed some from `show` implementation for `BenchmarkTools.Trial`
-function Base.show(io::IO, ::MIME"text/plain", bp::BenchmarkPlot)
+function Base.show(io::IO, ::MIME"text/plain", bp::BenchmarkHistogram)
     t = bp.trial
     if length(t) > 0
         min = minimum(t)
@@ -60,7 +60,7 @@ end
 
 macro benchmark(exprs...)
     return quote
-        BenchmarkPlot(BenchmarkTools.@benchmark($(exprs...)))
+        BenchmarkHistogram(BenchmarkTools.@benchmark($(exprs...)))
     end
 end
 
