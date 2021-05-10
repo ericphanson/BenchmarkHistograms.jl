@@ -16,6 +16,13 @@ end
 # Export our own `@benchmark`
 export @benchmark
 
+"""
+    const NBINS = Ref(0)
+
+Controls the number of histogram bins used.
+When `NBINS[] <= 0`, the number is chosen automatically by UnicodePlots.
+"""
+const NBINS = Ref(0)
 
 struct BenchmarkPlot
     trial::BenchmarkTools.Trial
@@ -44,7 +51,9 @@ function Base.show(io::IO, ::MIME"text/plain", bp::BenchmarkPlot)
         meanstr = "N/A"
     end
     println(io, "samples: ", length(t), "; evals/sample: ", t.params.evals, "; memory estimate: ", memorystr, "; allocs estimate: ", allocsstr)
-    show(io, histogram(t.times, ylabel="ns", xlabel="Counts", nbins=5))
+
+    bin_arg = NBINS[] <= 0 ? NamedTuple() : (; nbins=NBINS[])
+    show(io, histogram(t.times; ylabel="ns", xlabel="Counts", bin_arg...))
     println(io)
     print(io, "min: ", minstr, "; mean: ", meanstr, "; median: ", medstr, "; max: ", maxstr, ".")
 end

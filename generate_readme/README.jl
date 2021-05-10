@@ -11,6 +11,8 @@
 
 # Providing this functionality in BenchmarkTools itself was discussed in <https://github.com/JuliaCI/BenchmarkTools.jl/pull/180>.
 
+# Use the setting `BenchmarkPlots.NBINS[] = 10` to change the number of histogram bins used.
+
 # ## Example
 
 # One just uses `BenchmarkPlots` instead of `BenchmarkTools`, e.g.
@@ -28,5 +30,13 @@ using BenchmarkPlots
 # Without the `sort`, we end up with more of a uniform distribution:
 
 @benchmark 5 ∈ v setup=(v = rand(1:10000, 10000))
+
+
+# This function gives a nice Gaussian distribution of times, kindly supplied by Mason Protter:
+
+f() = sum((sin(i) for i in 1:round(Int, 1000 + 100*randn())))
+
+@benchmark f()
+
 
 # See also <https://tratt.net/laurie/blog/entries/minimum_times_tend_to_mislead_when_benchmarking.html> for another example of where looking at the whole histogram can be useful in benchmarking.

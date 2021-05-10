@@ -1,10 +1,8 @@
 using BenchmarkPlots
 using Test
 
-
-@testset "BenchmarkPlots.jl" begin
+function tests()
     bp = @benchmark 1+1
-
     output = sprint(show, MIME"text/plain"(), bp)
 
     # Don't want to test the exact string since the stats will
@@ -25,4 +23,22 @@ using Test
     @test n_matches(r"% GC") == 4
     # Corners of the plot
     @test n_matches(r"┌") == n_matches(r"┐") == n_matches(r"└") == n_matches(r"┘") == 1
+    return nothing
+end
+
+function tests(nbins)
+    pre = BenchmarkPlots.NBINS[]
+    BenchmarkPlots.NBINS[] = nbins
+    try
+        tests()
+    finally
+        BenchmarkPlots.NBINS[] = pre
+    end
+    return nothing
+end
+
+@testset "BenchmarkPlots.jl" begin
+    tests()
+    tests(10)
+    tests(-1)
 end
