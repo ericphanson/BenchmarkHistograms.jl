@@ -1,24 +1,24 @@
-[![CI](https://github.com/ericphanson/BenchmarkPlots.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/ericphanson/BenchmarkPlots.jl/actions/workflows/CI.yml)
-[![codecov](https://codecov.io/gh/ericphanson/BenchmarkPlots.jl/branch/main/graph/badge.svg?token=v0aca89xRi)](https://codecov.io/gh/ericphanson/BenchmarkPlots.jl)
+[![CI](https://github.com/ericphanson/BenchmarkHistograms.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/ericphanson/BenchmarkHistograms.jl/actions/workflows/CI.yml)
+[![codecov](https://codecov.io/gh/ericphanson/BenchmarkHistograms.jl/branch/main/graph/badge.svg?token=v0aca89xRi)](https://codecov.io/gh/ericphanson/BenchmarkHistograms.jl)
 
-# BenchmarkPlots
+# BenchmarkHistograms
 
 Wraps [BenchmarkTools.jl](https://github.com/JuliaCI/BenchmarkTools.jl/) to provide a UnicodePlots.jl-powered `show` method for `@benchmark`. This is accomplished by a custom `@benchmark` method which wraps the output in a `BenchmarkPlot` struct with a custom show method.
 
-This means one should not call `using` on both BenchmarkPlots and BenchmarkTools in the same namespace, or else these `@benchmark` macros will conflict ("WARNING: using `BenchmarkTools.@benchmark` in module Main conflicts with an existing identifier.")
+This means one should not call `using` on both BenchmarkHistograms and BenchmarkTools in the same namespace, or else these `@benchmark` macros will conflict ("WARNING: using `BenchmarkTools.@benchmark` in module Main conflicts with an existing identifier.")
 
-However, BenchmarkPlots re-exports all the export of BenchmarkTools, so you can simply call `using BenchmarkPlots`.
+However, BenchmarkHistograms re-exports all the export of BenchmarkTools, so you can simply call `using BenchmarkHistograms`.
 
 Providing this functionality in BenchmarkTools itself was discussed in <https://github.com/JuliaCI/BenchmarkTools.jl/pull/180>.
 
-Use the setting `BenchmarkPlots.NBINS[] = 10` to change the number of histogram bins used.
+Use the setting `BenchmarkHistograms.NBINS[] = 10` to change the number of histogram bins used.
 
 ## Example
 
-One just uses `BenchmarkPlots` instead of `BenchmarkTools`, e.g.
+One just uses `BenchmarkHistograms` instead of `BenchmarkTools`, e.g.
 
 ```julia
-using BenchmarkPlots
+using BenchmarkHistograms
 
 @benchmark sin(x) setup=(x=rand())
 ```
@@ -125,4 +125,3 @@ See also <https://tratt.net/laurie/blog/entries/minimum_times_tend_to_mislead_wh
 ---
 
 *This page was generated using [Literate.jl](https://github.com/fredrikekre/Literate.jl).*
-
