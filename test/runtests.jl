@@ -1,7 +1,9 @@
 using BenchmarkHistograms
 using Test
+import BenchmarkTools
 
-function tests()
+
+function counting_tests(nbins=nothing)
     bp = @benchmark 1+1
     output = sprint(show, MIME"text/plain"(), bp)
 
@@ -26,11 +28,11 @@ function tests()
     return nothing
 end
 
-function tests(nbins)
+function with_bins(f, nbins)
     pre = BenchmarkHistograms.NBINS[]
     BenchmarkHistograms.NBINS[] = nbins
     try
-        tests()
+        f(nbins)
     finally
         BenchmarkHistograms.NBINS[] = pre
     end
@@ -38,7 +40,16 @@ function tests(nbins)
 end
 
 @testset "BenchmarkHistograms.jl" begin
-    tests()
-    tests(10)
-    tests(-1)
+
+    @testset "Exports" begin
+        @test symdiff(names(BenchmarkTools), names(BenchmarkHistograms)) == [:BenchmarkHistograms]
+    end
+
+    @testset "Counting tests" begin
+        counting_tests()
+        with_bins(counting_tests, 10)
+        with_bins(counting_tests, -1)
+    end
 end
+
+include("vendor.jl")
