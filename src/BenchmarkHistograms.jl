@@ -23,6 +23,14 @@ When `NBINS[] <= 0`, the number is chosen automatically by Sturge's rule (i.e. `
 """
 const NBINS = Ref(0)
 
+"""
+    OUTLIER_QUANTILE = Ref(0.999)
+
+Controls which benchmarking times count as outliers and may be grouped into a single bin.
+Set `OUTLIER_QUANTILE[] = 1.0` to avoid this behavior.
+"""
+const OUTLIER_QUANTILE = Ref(0.999)
+
 struct BenchmarkHistogram
     trial::BenchmarkTools.Trial
 end
@@ -52,7 +60,8 @@ function Base.show(io::IO, ::MIME"text/plain", bp::BenchmarkHistogram; nbins=NBI
     println(io, "samples: ", length(t), "; evals/sample: ", t.params.evals, "; memory estimate: ", memorystr, "; allocs estimate: ", allocsstr)
     if length(t) > 0
         bin_arg = nbins <= 0 ? NamedTuple() : (; nbins=nbins)
-        simple_unicode_histogram(io, t.times; ylabel="ns", xlabel="Counts", bin_arg...)
+        simple_unicode_histogram(io, t.times; ylabel="ns", xlabel="Counts",
+        outlier_quantile=OUTLIER_QUANTILE[], bin_arg...)
         println(io)
     end
     print(io, "min: ", minstr, "; mean: ", meanstr, "; median: ", medstr, "; max: ", maxstr, ".")
@@ -70,6 +79,6 @@ end
 include("vendor.jl")
 
 # The code to draw the histograms
-include("plot_hist.jl")
+include("simple_unicode_histogram.jl")
 
 end

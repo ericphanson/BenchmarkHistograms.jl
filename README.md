@@ -3,19 +3,19 @@
 
 # BenchmarkHistograms
 
-Wraps [BenchmarkTools.jl](https://github.com/JuliaCI/BenchmarkTools.jl/) to provide a UnicodePlots.jl-powered `show` method for `@benchmark`. This is accomplished by a custom `@benchmark` method which wraps the output in a `BenchmarkPlot` struct with a custom show method.
+Wraps [BenchmarkTools.jl](https://github.com/JuliaCI/BenchmarkTools.jl/) to provide a unicode histogram `show` method for `@benchmark`. This is accomplished by a custom `@benchmark` method which wraps the output in a `BenchmarkPlot` struct with a custom show method.
 
 This means one should not call `using` on both BenchmarkHistograms and BenchmarkTools in the same namespace, or else these `@benchmark` macros will conflict ("WARNING: using `BenchmarkTools.@benchmark` in module Main conflicts with an existing identifier.")
 
-However, BenchmarkHistograms re-exports all of BenchmarkTools (including the module `BenchmarkTools` itself), so you can simply call `using BenchmarkHistograms` instead.
+However, BenchmarkHistograms re-exports all the export of BenchmarkTools, so you can simply call `using BenchmarkHistograms`.
 
 Providing this functionality in BenchmarkTools itself was discussed in <https://github.com/JuliaCI/BenchmarkTools.jl/pull/180>.
+Thanks to @brenhinkeller for providing the initial plotting code there.
 
-Use the setting `BenchmarkHistograms.NBINS[]` to change the number of histogram bins used, e.g.
-```julia
-BenchmarkHistograms.NBINS[] = 10
-```
-to use 10 bins.
+Use the setting `BenchmarkHistograms.NBINS` to change the number of histogram bins used, e.g. `BenchmarkHistograms.NBINS[] = 10` for 10 bins.
+
+Likewise use the setting `BenchmarkHistograms.OUTLIER_QUANTILE` to tweak which values count as outliers and may be grouped into a single bin.
+For example, `BenchmarkHistograms.OUTLIER_QUANTILE[] = 0.99` counts any values past the 99 percentile as possible outliers. This value defaults to `0.999` and is disabled by setting it to `1.0`.
 
 ## Example
 
@@ -29,22 +29,27 @@ using BenchmarkHistograms
 
 ```
 samples: 10000; evals/sample: 1000; memory estimate: 0 bytes; allocs estimate: 0
-                   ┌                                        ┐ 
-      [ 4.0,  6.0) ┤▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 7823   
-      [ 6.0,  8.0) ┤▇▇▇▇▇▇▇ 1643                              
-      [ 8.0, 10.0) ┤▇▇ 529                                    
-      [10.0, 12.0) ┤ 2                                        
-      [12.0, 14.0) ┤ 2                                        
-   ns [14.0, 16.0) ┤ 0                                        
-      [16.0, 18.0) ┤ 0                                        
-      [18.0, 20.0) ┤ 0                                        
-      [20.0, 22.0) ┤ 0                                        
-      [22.0, 24.0) ┤ 0                                        
-      [24.0, 26.0) ┤ 0                                        
-      [26.0, 28.0) ┤ 1                                        
-                   └                                        ┘ 
-                                    Counts
-min: 4.916 ns (0.00% GC); mean: 5.724 ns (0.00% GC); median: 5.208 ns (0.00% GC); max: 27.458 ns (0.00% GC).
+ns
+
+ (8.04  - 8.53 ]  ██████████████████████████████▏7673
+ (8.53  - 9.02 ]  ▌109
+ (9.02  - 9.51 ]  ▏3
+ (9.51  - 10.01]   0
+ (10.01 - 10.5 ]   0
+ (10.5  - 10.99]  █████▋1431
+ (10.99 - 11.48]  ██▌624
+ (11.48 - 11.97]  ▍70
+ (11.97 - 12.46]  ▎38
+ (12.46 - 12.95]  ▏4
+ (12.95 - 13.44]  ▏1
+ (13.44 - 13.93]  ▏2
+ (13.93 - 14.42]  ▏7
+ (14.42 - 14.92]  ▏22
+ (14.92 - 21.88]  ▏16
+
+                  Counts
+
+min: 8.041 ns (0.00% GC); mean: 8.812 ns (0.00% GC); median: 8.166 ns (0.00% GC); max: 21.875 ns (0.00% GC).
 ```
 
 That benchmark does not have a very interesting distribution, but it's not hard to find more interesting cases.
@@ -54,18 +59,26 @@ That benchmark does not have a very interesting distribution, but it's not hard 
 ```
 
 ```
-samples: 3192; evals/sample: 1000; memory estimate: 0 bytes; allocs estimate: 0
-                       ┌                                        ┐ 
-      [   0.0,  500.0) ┤▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 2036   
-      [ 500.0, 1000.0) ┤ 0                                        
-      [1000.0, 1500.0) ┤ 0                                        
-   ns [1500.0, 2000.0) ┤ 0                                        
-      [2000.0, 2500.0) ┤ 0                                        
-      [2500.0, 3000.0) ┤ 0                                        
-      [3000.0, 3500.0) ┤▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 1156                  
-                       └                                        ┘ 
-                                        Counts
-min: 1.875 ns (0.00% GC); mean: 1.141 μs (0.00% GC); median: 4.521 ns (0.00% GC); max: 3.315 μs (0.00% GC).
+samples: 3110; evals/sample: 1000; memory estimate: 0 bytes; allocs estimate: 0
+ns
+
+ (0.0    - 280.0 ]  ██████████████████████████████ 1964
+ (280.0  - 570.0 ]   0
+ (570.0  - 850.0 ]   0
+ (850.0  - 1130.0]   0
+ (1130.0 - 1410.0]   0
+ (1410.0 - 1690.0]   0
+ (1690.0 - 1970.0]   0
+ (1970.0 - 2250.0]   0
+ (2250.0 - 2540.0]   0
+ (2540.0 - 2820.0]   0
+ (2820.0 - 3100.0]   0
+ (3100.0 - 3380.0]  █████████████████1105
+ (3380.0 - 3660.0]  ▊41
+
+                  Counts
+
+min: 2.500 ns (0.00% GC); mean: 1.181 μs (0.00% GC); median: 5.334 ns (0.00% GC); max: 3.663 μs (0.00% GC).
 ```
 
 Here, we see a bimodal distribution; in the case `5` is indeed in the vector, we find it very quickly, in the 0-1000 ns range (thanks to `sort` which places it at the front). In the case 5 is not present, we need to check every entry to be sure, and we end up in the 3000-4000 ns range.
@@ -77,18 +90,26 @@ Without the `sort`, we end up with more of a uniform distribution:
 ```
 
 ```
-samples: 2461; evals/sample: 999; memory estimate: 0 bytes; allocs estimate: 0
-                       ┌                                        ┐ 
-      [   0.0,  500.0) ┤▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 364                        
-      [ 500.0, 1000.0) ┤▇▇▇▇▇▇▇▇▇▇▇▇ 327                          
-      [1000.0, 1500.0) ┤▇▇▇▇▇▇▇▇▇▇ 266                            
-   ns [1500.0, 2000.0) ┤▇▇▇▇▇▇▇▇ 214                              
-      [2000.0, 2500.0) ┤▇▇▇▇▇▇▇▇ 213                              
-      [2500.0, 3000.0) ┤▇▇▇▇▇ 146                                 
-      [3000.0, 3500.0) ┤▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 931   
-                       └                                        ┘ 
-                                        Counts
-min: 8.842 ns (0.00% GC); mean: 1.972 μs (0.00% GC); median: 2.154 μs (0.00% GC); max: 3.364 μs (0.00% GC).
+samples: 2393; evals/sample: 1000; memory estimate: 0 bytes; allocs estimate: 0
+ns
+
+ (0.0    - 310.0 ]  ███████▏214
+ (310.0  - 610.0 ]  ██████▍191
+ (610.0  - 910.0 ]  █████▊173
+ (910.0  - 1220.0]  █████▊174
+ (1220.0 - 1520.0]  █████▏155
+ (1520.0 - 1830.0]  ████▍133
+ (1830.0 - 2130.0]  ████119
+ (2130.0 - 2430.0]  ███▍100
+ (2430.0 - 2740.0]  ██▉86
+ (2740.0 - 3040.0]  ███▍102
+ (3040.0 - 3350.0]  ██████████████████████████████ 912
+ (3350.0 - 3650.0]  █30
+ (3650.0 - 5870.0]  ▎4
+
+                  Counts
+
+min: 2.334 ns (0.00% GC); mean: 2.037 μs (0.00% GC); median: 2.236 μs (0.00% GC); max: 5.869 μs (0.00% GC).
 ```
 
 This function gives a somewhat more Gaussian distribution of times, kindly supplied by Mason Protter:
@@ -100,24 +121,28 @@ f() = sum((sin(i) for i in 1:round(Int, 1000 + 100*randn())))
 ```
 
 ```
-samples: 10000; evals/sample: 1; memory estimate: 0 bytes; allocs estimate: 0
-                         ┌                                        ┐ 
-      [ 8000.0,  9000.0) ┤ 12                                       
-      [ 9000.0, 10000.0) ┤▇ 117                                     
-      [10000.0, 11000.0) ┤▇▇▇▇▇▇▇ 635                               
-      [11000.0, 12000.0) ┤▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 1810                
-      [12000.0, 13000.0) ┤▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 2959   
-      [13000.0, 14000.0) ┤▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 2460         
-   ns [14000.0, 15000.0) ┤▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 1451                    
-      [15000.0, 16000.0) ┤▇▇▇▇▇ 456                                 
-      [16000.0, 17000.0) ┤▇ 89                                      
-      [17000.0, 18000.0) ┤ 9                                        
-      [18000.0, 19000.0) ┤ 1                                        
-      [19000.0, 20000.0) ┤ 0                                        
-      [20000.0, 21000.0) ┤ 1                                        
-                         └                                        ┘ 
-                                          Counts
-min: 8.109 μs (0.00% GC); mean: 12.865 μs (0.00% GC); median: 12.820 μs (0.00% GC); max: 20.459 μs (0.00% GC).
+samples: 10000; evals/sample: 3; memory estimate: 0 bytes; allocs estimate: 0
+ns
+
+ (7030.0  - 7480.0 ]  ▏11
+ (7480.0  - 7930.0 ]  █▍128
+ (7930.0  - 8380.0 ]  ████████▏788
+ (8380.0  - 8830.0 ]  █████████████████████▏2044
+ (8830.0  - 9280.0 ]  ██████████████████████████████ 2916
+ (9280.0  - 9730.0 ]  ███████████████████████▉2309
+ (9730.0  - 10180.0]  ████████████▎1182
+ (10180.0 - 10630.0]  ████▎413
+ (10630.0 - 11080.0]  █▌140
+ (11080.0 - 11530.0]  ▌44
+ (11530.0 - 11980.0]  ▏6
+ (11980.0 - 12430.0]  ▏3
+ (12430.0 - 12880.0]   0
+ (12880.0 - 13330.0]  ▏5
+ (13330.0 - 18330.0]  ▏11
+
+                  Counts
+
+min: 7.028 μs (0.00% GC); mean: 9.184 μs (0.00% GC); median: 9.153 μs (0.00% GC); max: 18.333 μs (0.00% GC).
 ```
 
 See also <https://tratt.net/laurie/blog/entries/minimum_times_tend_to_mislead_when_benchmarking.html> for another example of where looking at the whole histogram can be useful in benchmarking.
@@ -125,3 +150,4 @@ See also <https://tratt.net/laurie/blog/entries/minimum_times_tend_to_mislead_wh
 ---
 
 *This page was generated using [Literate.jl](https://github.com/fredrikekre/Literate.jl).*
+
