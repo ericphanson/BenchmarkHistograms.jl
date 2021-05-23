@@ -52,9 +52,9 @@ function simple_unicode_histogram(io::IO, x::AbstractVector;
                                   outlier_quantile = 0.999,
                                   xlabel="", ylabel="")
     
-    bin_edges, truncate = get_edges(x; nbins, outlier_quantile)
-    hist_counts = get_counts(x, bin_edges; nbins, truncate)
-    return simple_unicode_histogram(io, bin_edges, hist_counts; plot_width, show_counts, xlabel, ylabel, truncate)
+    bin_edges, truncate = get_edges(x; nbins=nbins, outlier_quantile=outlier_quantile)
+    hist_counts = get_counts(x, bin_edges; nbins=nbins, truncate=truncate)
+    return simple_unicode_histogram(io, bin_edges, hist_counts; plot_width=plot_width, show_counts=show_counts, xlabel=xlabel, ylabel=ylabel, truncate=truncate)
 end
 
 function simple_unicode_histogram(io::IO, bin_edges::AbstractVector, hist_counts::AbstractVector;
