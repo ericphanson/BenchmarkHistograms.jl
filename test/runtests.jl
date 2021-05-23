@@ -67,7 +67,7 @@ end
 
 @testset "BenchmarkHistograms.jl" begin
     @testset "Exports" begin
-        @test symdiff(names(BenchmarkTools), names(BenchmarkHistograms)) == [:BenchmarkHistograms]
+        @test symdiff(names(BenchmarkTools), names(BenchmarkHistograms)) == [:BenchmarkHistograms, :comparison]
     end
 
     @testset "Counting tests" begin
