@@ -15,6 +15,8 @@ end
 # Export our own `@benchmark`
 export @benchmark
 
+export comparison
+
 """
     const NBINS = Ref(0)
 
@@ -80,5 +82,8 @@ include("vendor.jl")
 
 # The code to draw the histograms
 include("simple_unicode_histogram.jl")
+
+# Comparison plots
+include("comparison.jl")
 
 end
