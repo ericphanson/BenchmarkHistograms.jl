@@ -37,9 +37,9 @@ function simple_unicode_histogram(io::IO, x::AbstractArray;
     end
 
     if truncate
-        bin_edges = [range(l,u,length=nbins); M]
+        bin_edges = [range(l;stop=u,length=nbins); M]
     else
-        bin_edges = range(l,u,length=nbins+1)
+        bin_edges = range(l;stop=u,length=nbins+1)
     end
 
     # Print the histogram
