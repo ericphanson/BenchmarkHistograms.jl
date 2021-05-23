@@ -2,11 +2,7 @@
 
 const BLOCKS = [" ","▏","▎","▍","▌","▋","▊","▉","█","█"]
 
-function simple_unicode_histogram(io::IO, x::AbstractArray;
-                                  nbins::Integer=ceil(Int, log2(length(x))+1),
-                                  plot_width::Integer=30, show_counts::Bool=true,
-                                  outlier_quantile = 0.999,
-                                  xlabel="", ylabel="")
+function get_edges(x; nbins, outlier_quantile)
     # Find bounds. Our naive attempt is to use equal width
     # bins from the minimum to the maximum.
     l, M = extrema(x)
@@ -24,9 +20,21 @@ function simple_unicode_histogram(io::IO, x::AbstractArray;
     # our "upper bound"
     u = truncate ? Q : M
 
+    if truncate
+        bin_edges = [range(l;stop=u,length=nbins); M]
+    else
+        bin_edges = range(l;stop=u,length=nbins+1)
+    end
+    return bin_edges, truncate
+end
+
+function get_counts(x, bin_edges; nbins, truncate)
+    u = truncate ? bin_edges[end-1] : bin_edges[end]
+    l = bin_edges[1]
+
     # Fill histogram
     hist_counts = fill(0, nbins)
-    dx = truncate ? (u - l) / (nbins - 1) : initial_dx
+    dx = truncate ? (u - l) / (nbins - 1) : (u - l) / nbins
     for xi in x
         index = ceil(Int, (xi - l) / dx)
         if 1 <= index <= nbins
@@ -35,14 +43,26 @@ function simple_unicode_histogram(io::IO, x::AbstractArray;
             hist_counts[end] += 1
         end
     end
+    return hist_counts
+end
 
-    if truncate
-        bin_edges = [range(l;stop=u,length=nbins); M]
-    else
-        bin_edges = range(l;stop=u,length=nbins+1)
-    end
+function simple_unicode_histogram(io::IO, x::AbstractVector;
+                                  nbins::Integer=ceil(Int, log2(length(x))+1),
+                                  plot_width::Integer=30, show_counts::Bool=true,
+                                  outlier_quantile = 0.999,
+                                  xlabel="", ylabel="")
+    
+    bin_edges, truncate = get_edges(x; nbins, outlier_quantile)
+    hist_counts = get_counts(x, bin_edges; nbins, truncate)
+    return simple_unicode_histogram(io, bin_edges, hist_counts; plot_width, show_counts, xlabel, ylabel, truncate)
+end
 
-    # Print the histogram
+function simple_unicode_histogram(io::IO, bin_edges::AbstractVector, hist_counts::AbstractVector;
+        plot_width::Integer=30, show_counts::Bool=true,
+        xlabel="", ylabel="", truncate=true)
+    nbins = length(bin_edges) - 1
+    l = first(bin_edges)
+    u = truncate ? bin_edges[end-1] : bin_edges[end]
     d = ceil(Int, -log10(u-l))+1
     scale = plot_width/maximum(hist_counts)
     lower_labels = string.(round.(bin_edges[1:end-1], digits=d+ceil(Int,log10(nbins)-1)))
