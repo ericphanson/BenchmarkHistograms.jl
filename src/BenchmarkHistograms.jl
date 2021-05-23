@@ -1,6 +1,5 @@
 module BenchmarkHistograms
 
-using UnicodePlots
 using Statistics
 using Printf
 using BenchmarkTools: BenchmarkTools
@@ -20,7 +19,7 @@ export @benchmark
     const NBINS = Ref(0)
 
 Controls the number of histogram bins used.
-When `NBINS[] <= 0`, the number is chosen automatically by UnicodePlots.
+When `NBINS[] <= 0`, the number is chosen automatically by Sturge's rule (i.e. `log2(length(data))+1`).
 """
 const NBINS = Ref(0)
 
@@ -53,7 +52,7 @@ function Base.show(io::IO, ::MIME"text/plain", bp::BenchmarkHistogram; nbins=NBI
     println(io, "samples: ", length(t), "; evals/sample: ", t.params.evals, "; memory estimate: ", memorystr, "; allocs estimate: ", allocsstr)
     if length(t) > 0
         bin_arg = nbins <= 0 ? NamedTuple() : (; nbins=nbins)
-        show(io, histogram(t.times; ylabel="ns", xlabel="Counts", bin_arg...))
+        simple_unicode_histogram(io, t.times; ylabel="ns", xlabel="Counts", bin_arg...)
         println(io)
     end
     print(io, "min: ", minstr, "; mean: ", meanstr, "; median: ", medstr, "; max: ", maxstr, ".")
@@ -69,5 +68,8 @@ end
 # We vendor some pretty-printing methods from BenchmarkTools
 # so that we don't have to rely on internals.
 include("vendor.jl")
+
+# The code to draw the histograms
+include("plot_hist.jl")
 
 end
