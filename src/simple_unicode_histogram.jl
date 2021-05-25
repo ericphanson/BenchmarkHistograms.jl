@@ -10,7 +10,8 @@ function simple_unicode_histogram(io::IO, x::AbstractArray;
     # Find bounds. Our naive attempt is to use equal width
     # bins from the minimum to the maximum.
     l, M = extrema(x)
-    initial_dx = (M - l) / nbins
+    # our lower bounds are exclusive, so we want to be sure to get the min
+    l = prevfloat(l)
 
     # Now, we check: if we don't have some big outliers, we'd expect
     # the 99.9 percentile, `Q`, to be within a few bins of the maximum.
@@ -19,6 +20,7 @@ function simple_unicode_histogram(io::IO, x::AbstractArray;
     # the minimum to `Q` equally with `nbins-1` bins, and then reserve
     # the last bin to hold everything greater than `Q`.
     Q = quantile(x, outlier_quantile)
+    initial_dx = (M - l) / nbins
     truncate = M - Q > 2*initial_dx
 
     # our "upper bound"
