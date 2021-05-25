@@ -3,15 +3,19 @@
 
 # # BenchmarkHistograms
 
-# Wraps [BenchmarkTools.jl](https://github.com/JuliaCI/BenchmarkTools.jl/) to provide a UnicodePlots.jl-powered `show` method for `@benchmark`. This is accomplished by a custom `@benchmark` method which wraps the output in a `BenchmarkPlot` struct with a custom show method.
+# Wraps [BenchmarkTools.jl](https://github.com/JuliaCI/BenchmarkTools.jl/) to provide a unicode histogram `show` method for `@benchmark`. This is accomplished by a custom `@benchmark` method which wraps the output in a `BenchmarkPlot` struct with a custom show method.
 
 # This means one should not call `using` on both BenchmarkHistograms and BenchmarkTools in the same namespace, or else these `@benchmark` macros will conflict ("WARNING: using `BenchmarkTools.@benchmark` in module Main conflicts with an existing identifier.")
 
 # However, BenchmarkHistograms re-exports all the export of BenchmarkTools, so you can simply call `using BenchmarkHistograms`.
 
 # Providing this functionality in BenchmarkTools itself was discussed in <https://github.com/JuliaCI/BenchmarkTools.jl/pull/180>.
+# Thanks to @brenhinkeller for providing the initial plotting code there.
 
-# Use the setting `BenchmarkHistograms.NBINS[] = 10` to change the number of histogram bins used.
+# Use the setting `BenchmarkHistograms.NBINS` to change the number of histogram bins used, e.g. `BenchmarkHistograms.NBINS[] = 10` for 10 bins.
+
+# Likewise use the setting `BenchmarkHistograms.OUTLIER_QUANTILE` to tweak which values count as outliers and may be grouped into a single bin.
+# For example, `BenchmarkHistograms.OUTLIER_QUANTILE[] = 0.99` counts any values past the 99 percentile as possible outliers. This value defaults to `0.999` and is disabled by setting it to `1.0`.
 
 # ## Example
 

@@ -2,8 +2,9 @@ using BenchmarkHistograms
 using Test
 import BenchmarkTools
 
+block_regex = Regex(string("(", join(BenchmarkHistograms.BLOCKS[2:end], "|"), string(")")))
 
-function counting_tests(nbins=nothing)
+function counting_tests(nbins=nothing, outlier_quantile=nothing)
     bh = @benchmark 1+1
     output = sprint(show, MIME"text/plain"(), bh)
 
@@ -23,8 +24,9 @@ function counting_tests(nbins=nothing)
     # Summary stats
     @test n_matches(r"min") == n_matches(r"mean") == n_matches(r"median") == n_matches(r"max") == 1
     @test n_matches(r"% GC") == 4
-    # Corners of the plot
-    @test n_matches(r"┌") == n_matches(r"┐") == n_matches(r"└") == n_matches(r"┘") == 1
+
+    # Bars of the plot
+    @test n_matches(block_regex) > 1
     return nothing
 end
 
@@ -34,9 +36,6 @@ function empty_test()
     empty!(bh.trial.times)
     output = sprint(show, MIME"text/plain"(), bh)
 
-    # Don't want to test the exact string since the stats will
-    # fluctuate. So let's just test that it contains the right
-    # number of the right things, and assume they're arranged properly.
     n_matches = r -> length(collect(eachmatch(r, output)))
 
     @test n_matches(r"samples:") == 1
@@ -47,17 +46,21 @@ function empty_test()
     @test n_matches(r"Counts") == 0
     @test n_matches(r"min") == n_matches(r"mean") == n_matches(r"median") == n_matches(r"max") == 1
     @test n_matches(r"% GC") == 0
-    @test n_matches(r"┌") == n_matches(r"┐") == n_matches(r"└") == n_matches(r"┘") == 0
+    # Bars of the plot
+    @test n_matches(block_regex) == 0
     return nothing
 end
 
-function with_bins(f, nbins)
-    pre = BenchmarkHistograms.NBINS[]
+function with_params(f, nbins, outlier_quantile)
+    pre_bins = BenchmarkHistograms.NBINS[]
+    pre_q = BenchmarkHistograms.OUTLIER_QUANTILE[]
     BenchmarkHistograms.NBINS[] = nbins
+    BenchmarkHistograms.OUTLIER_QUANTILE[] = outlier_quantile
     try
-        f(nbins)
+        f(nbins, outlier_quantile)
     finally
-        BenchmarkHistograms.NBINS[] = pre
+        BenchmarkHistograms.NBINS[] = pre_bins
+        BenchmarkHistograms.OUTLIER_QUANTILE[] = pre_q
     end
     return nothing
 end
@@ -69,8 +72,11 @@ end
 
     @testset "Counting tests" begin
         counting_tests()
-        with_bins(counting_tests, 10)
-        with_bins(counting_tests, -1)
+        # we don't actually test that changing the parameters
+        # does something, but we at least test that we can
+        # change them to some different values without getting errors.
+        with_params(counting_tests, 10, 0.99)
+        with_params(counting_tests, -1, 1.0)
         empty_test()
     end
 end
