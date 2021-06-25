@@ -3,6 +3,8 @@
 
 # BenchmarkHistograms
 
+## Note: BenchmarkTools [now](https://github.com/JuliaCI/BenchmarkTools.jl/pull/217) prints very pretty histograms automatically for `@benchmark`. This package is therefore obsolete.
+
 Wraps [BenchmarkTools.jl](https://github.com/JuliaCI/BenchmarkTools.jl/) to provide a unicode histogram `show` method for `@benchmark`. This is accomplished by a custom `@benchmark` method which wraps the output in a `BenchmarkPlot` struct with a custom show method.
 
 This means one should not call `using` on both BenchmarkHistograms and BenchmarkTools in the same namespace, or else these `@benchmark` macros will conflict ("WARNING: using `BenchmarkTools.@benchmark` in module Main conflicts with an existing identifier.")
